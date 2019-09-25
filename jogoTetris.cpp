@@ -6,6 +6,7 @@
 #include "init.cpp"
 #include "Tetris.h"
 
+//teste
 
 void handle_key(unsigned char key, int mousex, int mousey)
 {
