@@ -4,6 +4,53 @@
 #include <iostream>
 
 
+void Tetris::Init()
+{
+
+}
+	
+void Tetris::Render()
+{
+	glClear (GL_COLOR_BUFFER_BIT);
+	
+	glPushMatrix();
+	{
+	
+		
+	}
+	glPopMatrix();
+	
+	glFlush ();
+}
+
+void Tetris::Reshape(int w, int h)
+{
+	glViewport (0, 0, (GLsizei) w, (GLsizei) h);
+	glMatrixMode (GL_PROJECTION);
+	glLoadIdentity ();
+	gluOrtho2D (0.0, (GLdouble) w, 0.0, (GLdouble) h);
+}
+
+void Tetris::ReadMouse(int button, int state, int x, int y)
+{
+	
+}
+
+void Tetris::ReadKeyboard(unsigned char key, int x, int y, bool press)
+{
+	switch(key)
+	{
+		case 27: exit(0); break;
+	}
+	glutPostRedisplay();
+}
+
+bool Tetris::Loop()
+{
+	return true;
+}
+
+
 Tetris::Tetris(int largura) {
 	constroi(largura);
 }

@@ -1,31 +1,80 @@
 #include <iostream>
 #include <cstdlib>
-//#include <ncurses.h>
 #include <unistd.h>
+#include <GL/glut.h>
 
-#include "init.cpp"
 #include "Tetris.h"
 
-//teste
+Tetris Game(20);
 
-void handle_key(unsigned char key, int mousex, int mousey)
+void AppRender()
 {
-
-	switch(key)
-	{
-		case 27: exit(0); break;
-	}
-	glutPostRedisplay();
+	Game.Render();
 }
 
-void draw_block(int x, int y, int size)
+void AppReshape(int w, int h)
 {
+	Game.Reshape(w,h);
+}
 
+void AppKeyUp(unsigned char key, int x, int y)
+{
+	Game.ReadKeyboard(key,x,y,false);
+}
+
+void AppKeyDown(unsigned char key, int x, int y)
+{
+	Game.ReadKeyboard(key,x,y,true);
+}
+
+void AppMouse(int button, int state, int x, int y)
+{
+	Game.ReadMouse(button,state,x,y);
+}
+
+void AppIdle()
+{
+	if(!Game.Loop()) exit(0);
+}
+
+void init (void)
+{
+/*  select clearing (background) color       */
+    glClearColor (1.0, 1.0, 1.0, 0.0);
+
+/*  initialize viewing values  */
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-100.0, 100.0, -100.0, 100.0);
+}
+
+int main(int argc, char** argv)
+{
 	
+	glutInit(&argc, argv);
+	glutInitDisplayMode (GLUT_SINGLE | GLUT_RGBA);
+	glutInitWindowSize (600, 500);
+	glutInitWindowPosition (100, 100);
+	glutCreateWindow ("Tetris: \"Nao eh mortal kombat\" Edition");
+	glutFullScreen();
+		
+	init();
+	
+	glutMouseFunc(AppMouse);
+	glutDisplayFunc(AppRender);
+	glutReshapeFunc(AppReshape);
+	glutKeyboardFunc(AppKeyDown);
+	glutKeyboardUpFunc(AppKeyUp);
+	glutIdleFunc(AppIdle);
+	
+	
+	Game.Init();
+	
+	glutMainLoop();
 	
 }
 
-
+/*
 int main(int argc, char** argv) {
 
 	const int possiveisRotacoes[] = {0,90,180,270};
@@ -49,10 +98,9 @@ int main(int argc, char** argv) {
 		
 		initGame(argc,argv);
 		
-		glutKeyboardFunc(handle_key);
+		drawScreen();
 		
-		
-		glutMainLoop();
+		updateScreen();
 	}
 	
 	/*
@@ -86,5 +134,6 @@ int main(int argc, char** argv) {
  		//refresh();
 	}
 	//endwin();
-	*/
+	
 }
+*/
