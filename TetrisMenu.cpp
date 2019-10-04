@@ -6,6 +6,10 @@
 //using namespace std;
 
 bool down,up,left,right =false;
+float xf=20, yf=20;
+float xtemp=xf, ytemp=yf;
+float win = 200;
+float view_w,view_h;
 int CurrLine =0;
 int CurrRow = 0;
 bool enter = false;
@@ -20,15 +24,16 @@ bool *Turbo = &status[1][0];bool *Rapido = &status[1][1];bool *Normal = &status[
 bool *Tam50x25 = &status[2][0];bool *Tam30x15 = &status[3][1];bool *Tam20x10 = &status[2][2]; 
 bool *Cor3 = &status[2][0];bool *Cor2 = &status[3][1];bool *Cor1 = &status[2][2]; 
 bool *Bebado = &status[2][0];bool *BebiNormal = &status[3][1]; 
-void handle_key(unsigned char key, int mousex, int mousey)
+
+void handle_key(unsigned char key, int mousex, int mousey) //callback do enter
 {
   switch(key)
   {
     case 13: 
-      //if (status[0][1]==1) 
+      //if (CurrLine==0&&CurrRow==0) 
         //começar jogo
-      //if(status[5][1]==1) 
-        //sair
+      if(CurrLine==5&&CurrRow==0) 
+        glutDestroyWindow(1);
 			if(status[CurrLine][CurrRow+1]==0) { 
         for(int i=0;i<3;i++)
           status[CurrLine][i]= 0;
@@ -42,7 +47,7 @@ void handle_key(unsigned char key, int mousex, int mousey)
   glutPostRedisplay();
 }
 
-void texto(const char* string,float x,float y) 
+void texto(const char* string,float x,float y) //func de texto usando bitmap
 {  
  int j = strlen( string );
   glRasterPos2f( x, y );
@@ -51,7 +56,7 @@ void texto(const char* string,float x,float y)
   }
 }
 
-void SpecialKeys(int key, int x, int y)
+void SpecialKeys(int key, int x, int y) //callback das setas
 {
   switch(key)
   {
@@ -70,6 +75,55 @@ void SpecialKeys(int key, int x, int y)
   glutPostRedisplay();
 }
 
+void HandleMouse(int button, int state, int x, int y)
+{
+	if (button == GLUT_LEFT_BUTTON){
+		if (state == GLUT_DOWN) {
+			// Troca o tamanho do ret�ngulo, que vai do
+			// centro da janela at� a posi��o onde o usu�rio
+			// clicou com o mouse
+      float winx = glutGet(GLUT_WINDOW_WIDTH);
+      float winy = glutGet(GLUT_WINDOW_HEIGHT);
+		  xf = ( (2 * winx * x) / view_w) - winx;
+      yf = ( ( (2 * winy) * (view_h-y) ) / view_h) - winy -50;
+      std::cout<<"x: "<<xf<<" y: "<<yf<<std::endl;
+      
+      //if(xf>-90 && xf<90 && yf>280 && yf<335) //Iniciar
+        //comeca o jogo
+      if(xf>-330 && xf<-150 && yf>125 && yf<185){ //Normal
+        status[1][2] =1;status[1][1] =0;status[1][0] =0; }
+      if(xf>-90 && xf<90 && yf>125 && yf<185){ //Rapido
+        status[1][1] =1;status[1][0] =0;status[1][2] =0; }
+      if(xf>150 && xf<330 && yf>125 && yf<185){ //Turbo
+        status[1][0] =1;status[1][1] =0;status[1][2] =0;  }
+      if(xf>-330 && xf<-150 && yf>-25 && yf<35){ //20x10
+        status[2][2] =1;status[2][1] =0;status[2][0] =0; }
+      if(xf>-90 && xf<90 && yf>-25 && yf<35){ //30x15
+        status[2][1] =1;status[2][0] =0;status[2][2] =0; }
+      if(xf>150 && xf<330 && yf>-25 && yf<35){ //50x25
+        status[2][0] =1;status[2][1] =0;status[2][2] =0;  }
+      if(xf>-330 && xf<-150 && yf>-175 && yf<-115){ //CorA
+        status[3][2] =1;status[3][1] =0;status[3][0] =0; }
+      if(xf>-90 && xf<90 && yf>-175 && yf<-115){ //CorB
+        status[3][1] =1;status[3][0] =0;status[3][2] =0; }
+      if(xf>150 && xf<330 && yf>-175 && yf<-115){ //CorC
+        status[3][0] =1;status[3][1] =0;status[3][2] =0;  }
+      if(xf>-210 && xf<-30 && yf>-325 && yf<-265){ //Normal
+        status[4][1] =1;status[4][2] =1;status[4][0] =0; }
+      if(xf>30 && xf<210 && yf>-325 && yf<-265){ //Bebado
+        status[4][0] =1;status[4][1] =0;status[4][2] =0;  }
+      if(xf>-90 && xf<90 && yf>-475 && yf<-415){ //Sair
+        glutDestroyWindow(1);  }
+    }	
+	
+    if (state == GLUT_UP) {
+      xf=xtemp;
+      yf=ytemp;
+    }
+  }
+	glutPostRedisplay();
+}
+
 void display(void)
 {
 /*  clear all pixels  */
@@ -77,11 +131,12 @@ void display(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     
-    double w = glutGet(GLUT_WINDOW_WIDTH);
+  double w = glutGet(GLUT_WINDOW_WIDTH);
 	double h = glutGet(GLUT_WINDOW_HEIGHT);
 	glColor3f(1,1,1);
 	glRectf(-200,-h,200,h);//normal
     //Desenha Eixos
+    /*
     glLineWidth(1);
     glBegin(GL_LINES);
         glColor3f(1,1,1);
@@ -90,24 +145,24 @@ void display(void)
         glVertex2f(0,-200);
         glVertex2f(0,200);
     glEnd();
-    
+    */
     glPointSize (5.0);
     glPolygonMode (GL_FRONT, GL_FILL);
 
-    glLineWidth(3); // Determina a espessura da linha que ser� desenhada
+    glLineWidth(3); // Determina a espessura da linha que ser desenhada
     
 	glPushMatrix();
 	{
 	glScalef(1.5,1.5,1);
   glTranslatef(0,60,1);
 	}
-  //Ve cor em "status", desenha botoes
+  
   int currRow=3;
-  for (int i=0;i<3;i++){
+  for (int i=0;i<3;i++){ //for pros botoes
     int currLine=0;
     currRow--;
     for (int j=0;j<6;j++){
-      if (status[currLine][currRow] == 1 && j!=0 && j!=5)
+      if (status[currLine][currRow] == 1 && j!=0 && j!=5) //Ve cor em "status"
         glColor3f(0,0,1);
       else glColor3f(0,1,0);
       currLine++;
@@ -120,6 +175,8 @@ void display(void)
     }
   }
   glColor3f(0,0,0);
+  //para ter cada palavra centralizada no meio do botao é inviavel fazer um for para impressão da mesma, pois o
+  //tamanho das palavras nao eh compartilhado
                             texto("Iniciar",-20,55);
                             texto("Velocidade",-36,30);
     texto("Normal",-105,5); texto("Rapido",-23,5); texto("Turbo",60,5);
@@ -130,35 +187,6 @@ void display(void)
                             texto("Modo",-20,-120);
               texto("Normal",-65,-145); texto("Bebado",16,-145);
                             texto("Sair",-12,-195);
-
-
-	/*
-    //Cor dependendo do status, botao, texto
-    glColor3f(0,1,0);
-    glRectf(-30,50,30,70);//iniciar
-    glColor3f(1,1,1); texto("Iniciar",-30,50,100,100);
-    int currRow=3;
-    for (int i=0;i<3;i++){
-      int currLine=1;
-      currRow--;
-      for (int j=1;j<4;j++){
-        if (status[currLine][currRow] == 1 && j!=0 && j!=5)
-          glColor3f(0,0,1);
-        else glColor3f(0,1,0);
-        currLine++;
-        if(j!=5)
-          glRectf(-110+(80*i),50-(50*j),-50+(80*i),70-(50*j));
-      }
-    }
-    //Modo
-    if (status[4][1] == 1) glColor3f(0,0,1); else glColor3f(0,1,0); 
-    glRectf(-70,-150,-10,-130); glColor3f(0,1,0);//Normal
-    if (status[4][0] == 1) glColor3f(0,0,1); else glColor3f(0,1,0); 
-    glRectf(10,-150,70,-130);//Bebado
-    //Sair
-    glColor3f(0,1,0);
-    glRectf(-30,-200,30,-180);//Sair
-    */
     glPopMatrix();
     glLoadIdentity();
     glScalef(1.5,1.5,1);
@@ -202,6 +230,8 @@ void reshape(GLsizei w, GLsizei h)
     if(h == 0) h = 1;
     // Especifica as dimensões da Viewport
     glViewport (0, 0, (GLsizei) w, height);
+    view_w= w; //usa no mouse
+    view_h=height; //usa no mouse
     //glViewport(0, 0, w, h);
     // Inicializa o sistema de coordenadas
     glMatrixMode(GL_PROJECTION);
@@ -230,8 +260,9 @@ int main(int argc, char** argv)
     init ();
     glutKeyboardFunc(handle_key);
     glutSpecialUpFunc(SpecialKeys);//pegar arrow keys
+    glutMouseFunc(HandleMouse);
     glutDisplayFunc(display);
-	glutReshapeFunc(reshape); 
+	  glutReshapeFunc(reshape); 
     glutMainLoop();
     return 0;   /* ISO C requires main to return int. */
 }
