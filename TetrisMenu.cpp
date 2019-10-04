@@ -30,10 +30,10 @@ void handle_key(unsigned char key, int mousex, int mousey) //callback do enter
   switch(key)
   {
     case 13: 
-      //if (CurrLine==0&&CurrRow==0) 
-        //começar jogo
+      if (CurrLine==0&&CurrRow==0) 
+        std::cout<<"comeca";
       if(CurrLine==5&&CurrRow==0) 
-        glutDestroyWindow(1);
+        exit(0);
 			if(status[CurrLine][CurrRow+1]==0) { 
         for(int i=0;i<3;i++)
           status[CurrLine][i]= 0;
@@ -61,14 +61,18 @@ void SpecialKeys(int key, int x, int y) //callback das setas
   switch(key)
   {
     case GLUT_KEY_DOWN: down=true; CurrLine++; if(CurrLine==6) CurrLine=0; 
-                        if(CurrLine==4&&CurrRow==1)CurrRow=0;break;
+                        if(CurrLine==4&&CurrRow==0)CurrRow=1;break;
   
-	case GLUT_KEY_UP: up=true; CurrLine--; if(CurrLine==-1) CurrLine=5; break;
-				
+	case GLUT_KEY_UP: up=true;if(CurrLine==4&&CurrRow==0) CurrRow++;
+                    CurrLine--; if(CurrLine==-1) CurrLine=5; break;
+                    			
 	case GLUT_KEY_LEFT: left=true; CurrRow++; if(CurrRow==2) CurrRow=-1; if(CurrLine==4&&CurrRow==1)CurrRow=-1;
                       if(CurrLine==0||CurrLine==5&&CurrRow!=0)CurrRow=0; break;
-	case GLUT_KEY_RIGHT: right=true; CurrRow--; if(CurrRow==-2) CurrRow=1; if(CurrLine==4&&CurrRow==1)CurrRow=0;
-                      if(CurrLine==0||CurrLine==5&&CurrRow!=0)CurrRow=0; break;  
+
+	case GLUT_KEY_RIGHT:right=true; if(CurrLine==4&&CurrRow==1){CurrRow-=2;break;} 
+                      CurrRow--; if(CurrRow==-2) CurrRow=1; if(CurrLine==4&&CurrRow==1)CurrRow=0;
+                      if(CurrLine==0||CurrLine==5&&CurrRow!=0)CurrRow=0;
+                       break;  
   }
 
   //Redesenha Caixa de select
@@ -85,34 +89,28 @@ void HandleMouse(int button, int state, int x, int y)
       yf = ( ( (2 * winy) * (view_h-y) ) / view_h) - winy -50;
       std::cout<<"x: "<<xf<<" y: "<<yf<<std::endl;
       
-      //if(xf>-90 && xf<90 && yf>280 && yf<335) //Iniciar
-        //comeca o jogo
-      if(xf>-330 && xf<-150 && yf>125 && yf<185){ //Normal
-        status[1][2] =1;status[1][1] =0;status[1][0] =0; }
-      if(xf>-90 && xf<90 && yf>125 && yf<185){ //Rapido
-        status[1][1] =1;status[1][0] =0;status[1][2] =0; }
-      if(xf>150 && xf<330 && yf>125 && yf<185){ //Turbo
-        status[1][0] =1;status[1][1] =0;status[1][2] =0;  }
-      if(xf>-330 && xf<-150 && yf>-25 && yf<35){ //20x10
-        status[2][2] =1;status[2][1] =0;status[2][0] =0; }
-      if(xf>-90 && xf<90 && yf>-25 && yf<35){ //30x15
-        status[2][1] =1;status[2][0] =0;status[2][2] =0; }
-      if(xf>150 && xf<330 && yf>-25 && yf<35){ //50x25
-        status[2][0] =1;status[2][1] =0;status[2][2] =0;  }
-      if(xf>-330 && xf<-150 && yf>-175 && yf<-115){ //CorA
-        status[3][2] =1;status[3][1] =0;status[3][0] =0; }
-      if(xf>-90 && xf<90 && yf>-175 && yf<-115){ //CorB
-        status[3][1] =1;status[3][0] =0;status[3][2] =0; }
-      if(xf>150 && xf<330 && yf>-175 && yf<-115){ //CorC
-        status[3][0] =1;status[3][1] =0;status[3][2] =0;  }
-      if(xf>-210 && xf<-30 && yf>-325 && yf<-265){ //Normal
-        status[4][1] =1;status[4][2] =1;status[4][0] =0; }
-      if(xf>30 && xf<210 && yf>-325 && yf<-265){ //Bebado
-        status[4][0] =1;status[4][1] =0;status[4][2] =0;  }
-      if(xf>-90 && xf<90 && yf>-475 && yf<-415){ //Sair
-        glutDestroyWindow(1);  }
+      int linha=-1;
+      int auxL4 =0;
+      for(int i=0;i<6;i++){ //checa o x,y do mouse com todas as caixas pra ver em qual ele clickou
+        int collumn = 2;
+        linha++;
+        for(int j=0;j<3;j++){
+          if ((i==0&&j==0)||(i==0&&j==2)||(i==5&&j==0)||(i==5&&j==2)||(i==4&&j==0)){
+            collumn--;continue;}
+          if(i==4) auxL4=-120;
+          if(xf>-330+(j*240)+auxL4 && xf<-150+(j*240)+auxL4 && yf>275-(i*150) && yf<335-(i*150)){
+            if(i==0&&j==1) std::cout<<"comeca";
+            if(i==5&&j==1) exit(0);
+            if(collumn==2) {status[linha][collumn]=1;status[linha][collumn-1]=0;status[linha][collumn-2]=0;}
+            if(collumn==1) {status[linha][collumn]=1;status[linha][collumn-1]=0;status[linha][collumn+1]=0;}
+            if(collumn==0) {status[linha][collumn]=1;status[linha][collumn+1]=0;status[linha][collumn+2]=0;}
+          }
+          if(i==4) auxL4=0;
+          collumn--;
+        }
+      }
     }	
-	
+	  
     if (state == GLUT_UP) {
       xf=xtemp;
       yf=ytemp;
@@ -123,30 +121,20 @@ void HandleMouse(int button, int state, int x, int y)
 
 void display(void)
 {
-/*  clear all pixels  */
-    glClear (GL_COLOR_BUFFER_BIT);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+/*  limpar pixels  */
+  glClear (GL_COLOR_BUFFER_BIT);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
     
   double w = glutGet(GLUT_WINDOW_WIDTH);
 	double h = glutGet(GLUT_WINDOW_HEIGHT);
 	glColor3f(1,1,1);
 	glRectf(-200,-h,200,h);//normal
-    //Desenha Eixos
-    /*
-    glLineWidth(1);
-    glBegin(GL_LINES);
-        glColor3f(1,1,1);
-        glVertex2f(200,0);
-        glVertex2f(-200,0);
-        glVertex2f(0,-200);
-        glVertex2f(0,200);
-    glEnd();
-    */
-    glPointSize (5.0);
-    glPolygonMode (GL_FRONT, GL_FILL);
 
-    glLineWidth(3); // Determina a espessura da linha que ser desenhada
+  glPointSize (5.0);
+  glPolygonMode (GL_FRONT, GL_FILL);
+
+  glLineWidth(3); // Determina a espessura da linha que ser desenhada
     
 	glPushMatrix();
 	{
