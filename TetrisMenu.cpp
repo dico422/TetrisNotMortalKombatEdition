@@ -79,12 +79,9 @@ void HandleMouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON){
 		if (state == GLUT_DOWN) {
-			// Troca o tamanho do ret�ngulo, que vai do
-			// centro da janela at� a posi��o onde o usu�rio
-			// clicou com o mouse
-      float winx = glutGet(GLUT_WINDOW_WIDTH);
-      float winy = glutGet(GLUT_WINDOW_HEIGHT);
-		  xf = ( (2 * winx * x) / view_w) - winx;
+      float winx = glutGet(GLUT_WINDOW_WIDTH);                //conversao do sistema de coordenadas
+      float winy = glutGet(GLUT_WINDOW_HEIGHT);               //do x,y do mouse (esquerda superior)
+		  xf = ( (2 * winx * x) / view_w) - winx;                 //pro centro da tela ser
       yf = ( ( (2 * winy) * (view_h-y) ) / view_h) - winy -50;
       std::cout<<"x: "<<xf<<" y: "<<yf<<std::endl;
       
