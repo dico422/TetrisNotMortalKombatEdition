@@ -2,17 +2,14 @@
 #define TETRIS_H
 
 #include <ostream>
+#include <cstdlib>
+#include <iostream>
+#include <ctime>
+#include <GL/glut.h>
+#include <unistd.h>
 
 class Tetris {
 	public:
-	
-		void Init();
-		void Render();
-		void Reshape(int w, int h);
-		void ReadMouse(int button, int state, int x, int y);
-		void ReadKeyboard(unsigned char key, int x, int y, bool press);
-		bool Loop();
-	
 		Tetris(int largura);
 		friend std::ostream &operator<<(std::ostream &,const Tetris&);
 
@@ -27,7 +24,6 @@ class Tetris {
 		~Tetris();
 		Tetris(const Tetris &);
 		Tetris &operator=(const Tetris &);
-	
 	private:
 		char **jogo;
 		int *alturas;
